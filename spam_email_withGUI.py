@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import csv
+from nltk.corpus import stopwords
+from wordcloud import WordCloud
 from sklearn import metrics 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
@@ -7,8 +10,44 @@ from sklearn.metrics import classification_report,confusion_matrix, plot_confusi
 from sklearn.naive_bayes import MultinomialNB
 import matplotlib.pyplot as plt
 import scikitplot as skplt
+import nltk
 
 mail_data = pd.read_csv('mail_data.csv')
+nltk.download('punkt')
+# Word Cloud
+ham_words = ''
+spam_words = ''
+# Creating a corpus of spam messages
+for val in mail_data[mail_data['Category'] == 'spam'].Message:
+    text = val.lower()
+    tokens = nltk.word_tokenize(text)
+    for words in tokens:
+        spam_words = spam_words + words + ' '
+# Creating a corpus of ham messages
+for val in mail_data[mail_data['Category'] == 'spam'].Message:
+    text = text.lower()
+    tokens = nltk.word_tokenize(text)
+    for words in tokens:
+        ham_words = ham_words + words + ' '
+
+spam_wordcloud = WordCloud(width=500, height=300).generate(spam_words)
+ham_wordcloud = WordCloud(width=500, height=300).generate(ham_words)
+
+#Spam Word cloud
+plt.figure( figsize=(7,7), facecolor='w')
+plt.imshow(spam_wordcloud)
+plt.axis("off")
+plt.tight_layout(pad=0)
+plt.show()
+
+#Creating Ham wordcloud
+plt.figure( figsize=(7,7), facecolor='w')
+plt.imshow(ham_wordcloud)
+plt.axis("off")
+plt.tight_layout(pad=0)
+plt.show()
+
+#Preproccessing
 
 mail_data.loc[mail_data['Category'] == 'spam', 'Category',] = 0
 mail_data.loc[mail_data['Category'] == 'ham', 'Category',] = 1
